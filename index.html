@@ -36,12 +36,13 @@
   </div>
 </header>
 
-<section class="hero" style="background-image: url('assets/img/lifestyle-mate-salame-01.jpg');">
+<section class="hero" id="hero">
+  <div class="hero-bg" id="hero-bg" style="background-image: url('assets/img/lifestyle-mate-salame-01.jpg');"></div>
   <div class="container">
     <div class="hero-content">
       <span class="hero-kicker"><span>Productos Artesanales</span><span>·</span><span>Tienda de Picadas</span></span>
       <h1>Fiambres curados con oficio, para compartir en mesa.</h1>
-      <p>Salame, lomo y panceta elaborados de forma artesanal, y picadas armadas a pedido para cualquier ocasión.</p>
+      <p>Salame, bondiola salada y jamón crudo elaborados de forma artesanal, y picadas armadas a pedido para cualquier ocasión.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20hacer%20un%20pedido%20a%20La%20Charcuter%C3%ADa" target="_blank" rel="noopener">
           Pedir por WhatsApp
@@ -80,16 +81,16 @@
         </div>
       </div>
       <div class="producto-card">
-        <img src="assets/img/producto-lomo-detalle.jpg" alt="Lomo / coppa curada, corte al detalle" loading="lazy" />
+        <img src="assets/img/producto-lomo-detalle.jpg" alt="Bondiola salada, corte al detalle" loading="lazy" />
         <div class="producto-card-body">
-          <h3>Lomo curado</h3>
-          <p>Corte magro, curado lento, ideal para picadas finas.</p>
+          <h3>Bondiola salada</h3>
+          <p>Curado lento, corte magro, ideal para picadas finas.</p>
         </div>
       </div>
       <div class="producto-card">
-        <img src="assets/img/producto-panceta.jpg" alt="Panceta artesanal" loading="lazy" />
+        <img src="assets/img/producto-panceta.jpg" alt="Jamón crudo artesanal" loading="lazy" />
         <div class="producto-card-body">
-          <h3>Panceta</h3>
+          <h3>Jamón crudo</h3>
           <p>Elaboración propia, sabor intenso y textura pareja en cada corte.</p>
         </div>
       </div>
@@ -152,6 +153,73 @@
     <p><a href="catalogo.html">Ver catálogo completo</a></p>
   </div>
 </footer>
+
+<!-- Fase 76 (14/09): trae en vivo la foto/contraste/promo que se editen
+     desde el módulo "Landing" de edgy-gestion (panel interno con login),
+     vía la función pública edgy_gestion.landing_publica(slug). Si algo
+     falla (sin conexión, función caída, etc.) la página se queda tal
+     cual está en el HTML -- nunca rompe nada, solo deja de actualizarse. -->
+<script>
+(function () {
+  var SUPABASE_URL = 'https://ipnufyqwbjbocsezdkiw.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwbnVmeXF3Ympib2NzZXpka2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyODg2ODgsImV4cCI6MjA4Nzg2NDY4OH0.MOqvcNbA4AbGxJgrag2tOj_rH7cOJTWU2k8qARYVhT8';
+  var SLUG = 'la-charcuteria-express';
+
+  function escapeHtml(texto) {
+    var div = document.createElement('div');
+    div.textContent = texto;
+    return div.innerHTML;
+  }
+
+  fetch(SUPABASE_URL + '/rest/v1/rpc/landing_publica', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // La función vive en el esquema "edgy_gestion" (no "public"), que
+      // es el default de PostgREST -- este header le dice qué esquema
+      // usar. El cliente supabase-js de la app hace esto solo (ver
+      // db: { schema: 'edgy_gestion' } en src/lib/supabase.ts); acá, con
+      // fetch a pelo, hay que ponerlo a mano.
+      'Content-Profile': 'edgy_gestion',
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ p_slug: SLUG }),
+  })
+    .then(function (r) {
+      return r.ok ? r.json() : null;
+    })
+    .then(function (data) {
+      if (!data) return;
+
+      var heroBg = document.getElementById('hero-bg');
+      if (heroBg) {
+        if (data.heroImagenUrl) {
+          heroBg.style.backgroundImage = "url('" + data.heroImagenUrl + "')";
+        }
+        if (data.heroContraste) {
+          heroBg.style.filter = 'contrast(' + data.heroContraste + '%)';
+        }
+      }
+
+      if (data.promoActiva && data.promoTitulo) {
+        var banner = document.createElement('div');
+        banner.className = 'promo-banner';
+        var html = '<div class="container"><strong>' + escapeHtml(data.promoTitulo) + '</strong>';
+        if (data.promoTexto) {
+          html += ' — ' + escapeHtml(data.promoTexto);
+        }
+        html += '</div>';
+        banner.innerHTML = html;
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+    })
+    .catch(function () {
+      // Silencioso a propósito: si falla, la landing se ve exactamente
+      // igual que si este script no existiera.
+    });
+})();
+</script>
 
 </body>
 </html>

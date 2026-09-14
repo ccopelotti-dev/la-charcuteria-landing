@@ -168,16 +168,27 @@ img {
   }
 }
 
-/* ── Hero ── */
+/* ── Hero ──
+   Fase 76 (14/09): la imagen de fondo vive en .hero-bg, una capa propia
+   detrás del overlay -- así el filtro de contraste que edita el panel
+   "Landing" (edgy-gestion) afecta solo a la foto, nunca al texto ni a
+   los botones que van encima. */
 .hero {
   position: relative;
   min-height: 82vh;
   display: flex;
   align-items: flex-end;
   color: var(--cream);
+  isolation: isolate;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  isolation: isolate;
+  z-index: -2;
+  transition: filter 0.2s ease;
 }
 
 .hero::after {
@@ -482,4 +493,19 @@ section {
   justify-content: center;
   padding: 10px 16px;
   font-size: 0.82rem;
+}
+
+/* ── Promo banner (Fase 76) ──
+   Inyectado por JS (index.html) cuando el panel "Landing" tiene una
+   promo activa. Va como primer elemento del body, arriba del header. */
+.promo-banner {
+  background: var(--maroon);
+  color: var(--cream);
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+}
+
+.promo-banner strong {
+  font-weight: 800;
 }

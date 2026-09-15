@@ -29,7 +29,7 @@
       </ul>
     </nav>
     <div class="nav-cta">
-      <a class="btn btn-primary" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20hacer%20una%20consulta%20a%20La%20Charcuter%C3%ADa" target="_blank" rel="noopener">
+      <a class="btn btn-primary js-whatsapp" data-msg="Hola! Quiero hacer una consulta a La Charcutería" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20hacer%20una%20consulta%20a%20La%20Charcuter%C3%ADa" target="_blank" rel="noopener">
         WhatsApp
       </a>
     </div>
@@ -63,7 +63,7 @@
         <div class="catalogo-card-body">
           <h3>Salame artesanal</h3>
           <span class="precio">Consultar precio</span>
-          <a class="btn btn-outline-maroon" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20del%20Salame%20artesanal" target="_blank" rel="noopener">
+          <a class="btn btn-outline-maroon js-whatsapp" data-msg="Hola! Quiero consultar precio del Salame artesanal" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20del%20Salame%20artesanal" target="_blank" rel="noopener">
             Consultar por WhatsApp
           </a>
         </div>
@@ -74,7 +74,7 @@
         <div class="catalogo-card-body">
           <h3>Bondiola salada</h3>
           <span class="precio">Consultar precio</span>
-          <a class="btn btn-outline-maroon" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20de%20la%20Bondiola%20salada" target="_blank" rel="noopener">
+          <a class="btn btn-outline-maroon js-whatsapp" data-msg="Hola! Quiero consultar precio de la Bondiola salada" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20de%20la%20Bondiola%20salada" target="_blank" rel="noopener">
             Consultar por WhatsApp
           </a>
         </div>
@@ -85,7 +85,7 @@
         <div class="catalogo-card-body">
           <h3>Jamón crudo</h3>
           <span class="precio">Consultar precio</span>
-          <a class="btn btn-outline-maroon" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20del%20Jam%C3%B3n%20crudo" target="_blank" rel="noopener">
+          <a class="btn btn-outline-maroon js-whatsapp" data-msg="Hola! Quiero consultar precio del Jamón crudo" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20consultar%20precio%20del%20Jam%C3%B3n%20crudo" target="_blank" rel="noopener">
             Consultar por WhatsApp
           </a>
         </div>
@@ -96,7 +96,7 @@
         <div class="catalogo-card-body">
           <h3>Picada a medida</h3>
           <span class="precio">Según cantidad de personas</span>
-          <a class="btn btn-outline-maroon" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20armar%20una%20picada%20a%20medida" target="_blank" rel="noopener">
+          <a class="btn btn-outline-maroon js-whatsapp" data-msg="Hola! Quiero armar una picada a medida" href="https://wa.me/5492954367009?text=Hola!%20Quiero%20armar%20una%20picada%20a%20medida" target="_blank" rel="noopener">
             Armar mi picada
           </a>
         </div>
@@ -113,6 +113,40 @@
     <p><a href="index.html">Volver al inicio</a></p>
   </div>
 </footer>
+
+<!-- Fase 78 (15/09): solo actualiza el número de WhatsApp real del
+     negocio en todos los botones de esta página (el resto del contenido
+     de este catálogo esqueleto sigue fijo -- ver README). Mismo endpoint
+     que index.html, documentado en API-PUBLICA.md. -->
+<script>
+(function () {
+  var SUPABASE_URL = 'https://ipnufyqwbjbocsezdkiw.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwbnVmeXF3Ympib2NzZXpka2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyODg2ODgsImV4cCI6MjA4Nzg2NDY4OH0.MOqvcNbA4AbGxJgrag2tOj_rH7cOJTWU2k8qARYVhT8';
+  var SLUG = 'la-charcuteria-express';
+  var NUMERO_WHATSAPP_DEFAULT = '5492954367009';
+
+  fetch(SUPABASE_URL + '/rest/v1/rpc/conector_landing', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Profile': 'edgy_gestion',
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ p_slug: SLUG }),
+  })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (payload) {
+      var numero = (payload && payload.landing && payload.landing.whatsappNumero) || NUMERO_WHATSAPP_DEFAULT;
+      var botones = document.querySelectorAll('.js-whatsapp');
+      for (var b = 0; b < botones.length; b++) {
+        var msg = botones[b].getAttribute('data-msg') || '';
+        botones[b].href = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(msg);
+      }
+    })
+    .catch(function () {});
+})();
+</script>
 
 </body>
 </html>

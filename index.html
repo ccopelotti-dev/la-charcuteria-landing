@@ -297,7 +297,13 @@
               '<div class="producto-card">' +
               (prod.imagen ? '<img src="' + prod.imagen + '" alt="' + escapeHtml(prod.nombre) + '" loading="lazy" />' : '') +
               '<div class="producto-card-body"><h3>' + escapeHtml(prod.nombre) + '</h3>' +
-              '<p>' + formatearPrecio(prod.precio) + (prod.unidadVenta ? ' / ' + escapeHtml(prod.unidadVenta) : '') + '</p></div></div>';
+              '<span class="precio">' + formatearPrecio(prod.precio) + (prod.unidadVenta ? ' / ' + escapeHtml(prod.unidadVenta) : '') + '</span>' +
+              // La bajada de cada card es la descripción real del catálogo (mismo
+              // texto que carga Carlos en Productos y Stock) -- si el producto
+              // todavía no tiene descripción cargada, se omite el párrafo en vez
+              // de mostrarlo vacío.
+              (prod.descripcion ? '<p>' + escapeHtml(prod.descripcion) + '</p>' : '') +
+              '</div></div>';
           }
           if (htmlGrid) grid.innerHTML = htmlGrid;
         }
